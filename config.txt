@@ -1,1 +1,1 @@
-g++ src/main.c -o main -I include
+compile_command = g++ src/main.c -o main -I include

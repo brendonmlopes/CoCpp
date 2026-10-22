@@ -53,9 +53,11 @@ int main(int argc, char** argv){
 		//Save last modification time into lastModTime
 		if (stat(filePath, &fileInfo) == 0) {
 		    if (lastModTime != fileInfo.st_mtime) {
-			printf("File changed!\n");
 			lastModTime = fileInfo.st_mtime;
+
+			printf("Compiling...\n");
 			system(compileCommand);
+			printf("Compiled!\n");
 		    }
 		}
 		sleep(1);
@@ -65,18 +67,25 @@ int main(int argc, char** argv){
 
 int getCompileCommand(char** configFileName,char** compileCommand){
 	char line[256];
-	printf("FUNCTION CALL:\t\tgetCompileCommand");
+	printf("FUNCTION CALL:\t\tgetCompileCommand\n");
+	printf("\tCONFIG FILE NAME:\t%s\n",*configFileName);
 
 	//open the file given the filename
 	FILE* file = fopen(*configFileName,"r");
 
 	if(file == NULL){
 		perror("Command file couldn't be opened");
+		return 1;
 	}
 
+	//read lines from the file
+	char* buffer = (char*) malloc(256);
+	buffer = fgets(buffer,256,file);
+	printf("\tCONFIG FILE CONTENT:\t%s",buffer);
+
 	//fill buffer with everything from after "compile_command=" to "\n"
-	fgets(*compileCommand,256,file);
-	printf("\tCONFIG COMMAND:\t%s\n",line);
+	sscanf(buffer,"compile_command = %255[^\n]",*compileCommand);
+	printf("\tCOMMAND:\t%s\n",*compileCommand);
 	return 0;
 }
 
